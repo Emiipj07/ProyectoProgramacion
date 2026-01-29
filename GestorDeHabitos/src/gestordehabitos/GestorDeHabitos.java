@@ -17,72 +17,93 @@ public class GestorDeHabitos {
         int[] comida = new int[dias];
         int[] estres = new int[dias];
         int[] pantalla = new int[dias];
-        int[] puntos = new int[dias];
+
+        int puntosSueno = 0;
+        int puntosAgua = 0;
+        int puntosEjercicio = 0;
+        int puntosPasos = 0;
+        int puntosComida = 0;
+        int puntosEstres = 0;
+        int puntosPantalla = 0;
 
         System.out.println("GESTOR DE HÁBITOS");
         System.out.println("------------------");
 
         for (int i = 0; i < dias; i++) {
             System.out.println("\nDía " + (i + 1));
+
             do {
                 sueno[i] = ingresarEntero(sc, "Horas de sueño: ");
                 if (sueno[i] > 24) {
                     System.out.println("No puede colocar más de 24 horas!");
                 }
             } while (sueno[i] > 24);
-            
+
             do {
                 agua[i] = ingresarEntero(sc, "Agua (ml): ");
-                if (agua[i] > 8000){
-                    System.out.println("No puede colocar más de 8000 Ml!");
+                if (agua[i] > 8000) {
+                    System.out.println("No puede colocar más de 8000 ml!");
                 }
-            } while(agua[i] > 8000);
+            } while (agua[i] > 8000);
+
             do {
                 ejercicio[i] = ingresarEntero(sc, "Ejercicio (min): ");
-                if(ejercicio[i] > 300){
+                if (ejercicio[i] > 300) {
                     System.out.println("No puede colocar más de 300 minutos!");
                 }
-            } while(ejercicio[i] > 300);
-            
+            } while (ejercicio[i] > 300);
+
+            do {
+                pasos[i] = ingresarEntero(sc, "Pasos del día: ");
+                if (pasos[i] > 50000) {
+                    System.out.println("No puede colocar más de 50000 pasos!");
+                }
+            } while (pasos[i] > 50000);
+
             comida[i] = ingresarEntero(sc, "¿Comiste saludable? (1 = Sí / 0 = No): ");
-            do{
+
+            do {
                 estres[i] = ingresarEntero(sc, "Nivel de estrés (1 a 5): ");
-                if( estres[i] > 5){
+                if (estres[i] > 5) {
                     System.out.println("No puede colocar más de 5!");
                 }
-            } while(estres[i] > 5);
-            do{
+            } while (estres[i] > 5);
+
+            do {
                 pantalla[i] = ingresarEntero(sc, "Horas de pantalla: ");
-                if (pantalla[i] > 24){
+                if (pantalla[i] > 24) {
                     System.out.println("No puede colocar más de 24 horas!");
                 }
-            } while(pantalla[i] > 24);
+            } while (pantalla[i] > 24);
 
-            puntos[i] = 0;
             if (sueno[i] >= 8) {
-                puntos[i]++;
+                puntosSueno++;
             }
             if (agua[i] >= 2000) {
-                puntos[i]++;
+                puntosAgua++;
             }
             if (ejercicio[i] >= 30) {
-                puntos[i]++;
+                puntosEjercicio++;
             }
             if (pasos[i] >= 8000) {
-                puntos[i]++;
+                puntosPasos++;
             }
             if (comida[i] == 1) {
-                puntos[i]++;
+                puntosComida++;
+            }
+            if (estres[i] <= 2) {
+                puntosEstres++;
             }
             if (pantalla[i] <= 6) {
-                puntos[i]++;
+                puntosPantalla++;
             }
-            System.out.println("Gracias por usar el programa. Nos vemos mañana!");
+            System.out.println("Datos del día registrados correctamente");
+            System.out.println();
         }
+        guardarArchivo(sueno, agua, ejercicio, pasos, comida, estres, pantalla, dias);
+        MostrarResultados(puntosSueno, puntosAgua, puntosEjercicio, puntosPasos, puntosComida, puntosEstres, puntosPantalla);
 
-        guardarArchivo(sueno, agua, ejercicio, comida, estres, pantalla, puntos, dias);
-
-        System.out.println("\nDatos de la semana guardados en archivo.");
+        System.out.println("\nGracias por usar el Gestor de Hábitos");
     }
 
     public static int ingresarEntero(Scanner sc, String mensaje) {
@@ -108,7 +129,7 @@ public class GestorDeHabitos {
             PrintWriter pw = new PrintWriter(archivo);
 
             for (int i = 0; i < dias; i++) {
-                pw.println((i + 1) + "," + sueno[i] + "," + agua[i] + "," + ejercicio[i] + "," +  "," + comida[i] + "," + estres[i] + "," + pantalla[i] + "," + puntos[i]);
+                pw.println((i + 1) + "," + sueno[i] + "," + agua[i] + "," + ejercicio[i] + "," + "," + comida[i] + "," + estres[i] + "," + pantalla[i] + "," + puntos[i]);
             }
             archivo.close();
             pw.close();
@@ -116,10 +137,26 @@ public class GestorDeHabitos {
             System.out.println("Error al guardar archivo." + e.getMessage());
         }
     }
-    public static void MostrarResultados(){
+
+    public static String evaluarActividad(int puntos) {
+        if (puntos <= 4) {
+            return "Es importante mejorar";
+        } else {
+            return "Excelente, sigue así";
+        }
+    }
+
+    public static void MostrarResultados(int puntosSueno, int puntosAgua, int puntosEjercicio, int puntosPasos, int puntosComida, int puntosEstres, int puntosPantalla) {
         System.out.println("+-----------------------------------------------+");
-        System.out.println("+                 RESULTADOS                    +");
+        System.out.println("|                 RESULTADOS                    |");
         System.out.println("+-----------------------------------------------+");
-        System.out.println("++");
+        System.out.println("Sueño: " + puntosSueno + "/7 - " + evaluarActividad(puntosSueno));
+        System.out.println("Agua: " + puntosAgua + "/7 - " + evaluarActividad(puntosAgua));
+        System.out.println("Ejercicio: " + puntosEjercicio + "/7 - " + evaluarActividad(puntosEjercicio));
+        System.out.println("Pasos: " + puntosPasos + "/7 - " + evaluarActividad(puntosPasos));
+        System.out.println("Comida saludable: " + puntosComida + "/7 - " + evaluarActividad(puntosComida));
+        System.out.println("Estrés controlado: " + puntosEstres + "/7 - " + evaluarActividad(puntosEstres));
+        System.out.println("Pantalla: " + puntosPantalla + "/7 - " + evaluarActividad(puntosPantalla));
+
     }
 }
